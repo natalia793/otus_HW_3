@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>otus_HW_3</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <jre.version>11.0.14</jre.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <aspectj.version>1.9.7</aspectj.version>
+        <allure-testng.version>2.14.0</allure-testng.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <tags></tags>
+    </properties>
+
+    <dependencies>
+
+
+    <!--TestNG-->
+    <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>7.5</version>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>7.5</version>
+        <classifier>javadoc</classifier>
+    </dependency>
+
+    <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>7.5</version>
+        <classifier>sources</classifier>
+    </dependency>
+
+    <dependency>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-testng</artifactId>
+        <version>2.17.3</version>
+    </dependency>
+
+
+    <!--Log4j-->
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.17.2</version>
+    </dependency>
+
+    <!--Rest-Assured-->
+    <dependency>
+        <groupId>io.rest-assured</groupId>
+        <artifactId>rest-assured</artifactId>
+        <version>5.3.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-rest-assured</artifactId>
+        <version>2.17.2</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-selenide</artifactId>
+        <version>2.14.0</version>
+    </dependency>
+
+    <!--json-schema-validator-->
+    <dependency>
+        <groupId>com.github.java-json-tools</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>2.2.14</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.rest-assured</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>4.5.1</version>
+    </dependency>
+
+
+    <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>2.5.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.9.9.3</version>
+    </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+
+<build>
+<plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven-resources-plugin.version}</version>
+        <executions>
+            <execution>
+                <id>copy-resources</id>
+                <phase>validate</phase>
+                <goals>
+                    <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/allure-results</outputDirectory>
+                    <resources>
+                        <resource>
+                            <directory>src/test/resources</directory>
+                            <includes>
+                                <include>environment.properties</include>
+                            </includes>
+                        </resource>
+                    </resources>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+            <source>11</source>
+            <target>11</target>
+            <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+    </plugin>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+            <includes>
+                <include>
+                    RunnerTest.java
+                </include>
+            </includes>
+            <suiteXmlFiles>
+<!--                <suiteXmlFile>testng.xml</suiteXmlFile>-->
+<!--                <suiteXmlFile>suite.xml</suiteXmlFile>-->
+                <!--                        <suiteXmlFile>mockTestNg.xml</suiteXmlFile>-->
+            </suiteXmlFiles>
+            <useSystemClassLoader>false</useSystemClassLoader>
+            <testFailureIgnore>false</testFailureIgnore>
+            <rerunFailingTestsCount>1</rerunFailingTestsCount>
+            <skipTests>false</skipTests>
+            <argLine>
+                -Dcucumber.filter.tags="${tags}"
+                -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                -Dcucumber.options="--plugin io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm"
+                -Dcucumber.options="@target/rerun.txt"
+                -Dfile.encoding=UTF-8
+            </argLine>
+            <systemProperties>
+                <property>
+                    <name>allure.results.directory</name>
+                    <value>${project.build.directory}/allure-results</value>
+                </property>
+            </systemProperties>
+        </configuration>
+        <dependencies>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+        </dependencies>
+    </plugin>
+    <plugin>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-maven</artifactId>
+        <version>2.10.0</version>
+    </plugin>
+    <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+            <archive>
+                <manifest>
+                    <mainClass>RunJarTests</mainClass>
+                </manifest>
+            </archive>
+            <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+        </configuration>
+    </plugin>
+</plugins>
+</build>
+
+</project>
