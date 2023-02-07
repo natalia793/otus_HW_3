@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/Welcome3",
+  "definitions": {
+    "Welcome3": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "petId": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "shipDate": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "complete",
+        "id",
+        "petId",
+        "quantity",
+        "shipDate",
+        "status"
+      ],
+      "title": "Welcome3"
+    }
+  }
+}
