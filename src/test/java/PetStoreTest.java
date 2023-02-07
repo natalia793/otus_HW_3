@@ -15,6 +15,8 @@ public class PetStoreTest {
     public static String endpoint = "/pet";
     public static String endpointNotFoundPet = "/pet/1298798798687675765";
     public static String schemePath = "SchemaPetAdd.json";
+
+    public static String idPet = "12";
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Test(groups = "apiTestsPetShop",
@@ -49,8 +51,15 @@ public class PetStoreTest {
         //Проверить новый status питомца
         String status = jsonPath.get("status");
         Assert.assertEquals(status, "available");
-        LOGGER.info("Status нового питомца в магазине: " + status);
 
+        //Проверить создание нового питомца
+        JsonPath response = getJsonPath(endpoint + "/" + idNewPet, schemePath);
+        Integer idResponsePet = response.get("id");
+        Assert.assertEquals(idResponsePet, 12);
+        String name = jsonPath.get("category.name");
+        Assert.assertEquals(name, "KittyCat");
+        LOGGER.info("Status нового питомца в магазине: " + status);
+        LOGGER.info("name нового питомца в магазине: " + name);
         LOGGER.info("Отправлен POST запрос /pet, проверен код 200 и id нового питомца в магазине");
     }
 
@@ -83,6 +92,13 @@ public class PetStoreTest {
         Assert.assertEquals(newName, "NewName");
         LOGGER.info("Новое имя питомца в магазине: " + newName);
 
+        //Проверить изменение имени питомца питомца с id=12 pet/{id}
+        JsonPath response = getJsonPath(endpoint + "/" + idPet, schemePath);
+        Integer idResponsePet = response.get("id");
+        Assert.assertEquals(idResponsePet, 12);
+        String name = jsonPath.get("category.name");
+        Assert.assertEquals(name, "NewName");
+        LOGGER.info("name нового питомца в магазине: " + name);
         LOGGER.info("Отправлен POST запрос /pet, проверен код 200 и id нового питомца в магазине");
     }
 

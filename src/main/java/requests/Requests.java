@@ -32,6 +32,23 @@ public class Requests {
                 extract().jsonPath();
     }
 
+
+    public static JsonPath getJsonPath(String endpoint, String schemePath) {
+        return given().
+                filters(new AllureRestAssured()).
+                log().all().
+                contentType(ContentType.JSON).
+                when().
+                get(url+endpoint).
+                then().log().all().
+                statusCode(200).
+                statusLine("HTTP/1.1 200 OK").
+                contentType(ContentType.JSON).
+                body(JsonSchemaValidator.matchesJsonSchemaInClasspath(schemePath).
+                        using(settings().with().checkedValidation(true))).
+                extract().jsonPath();
+    }
+
     public static JsonPath putJsonPath(String endpoint, String schemePath, Pet newPet) {
         return given().
                 filters(new AllureRestAssured()).
