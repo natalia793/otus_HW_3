@@ -9,18 +9,11 @@ import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import java.util.ArrayList;
-import static requests.Requests.*;
+import requests.Requests;
 
-public class PetStoreTest {
 
-    public static String endpoint = "/pet";
-    public static String endpointNotFoundPet = "/pet/1298798798687675765";
-    public static String schemePath = "SchemaPetAdd.json";
 
-    public static String schemeStorePath= "SchemaStore.json";
-
-    public static String storeEndpoint = "/store/order";
-
+public class PetStoreTest extends Requests {
     public static String idPet = "12";
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -46,7 +39,7 @@ public class PetStoreTest {
                 .build();
 
         //Создать нового питомца в магазине и узнать его id
-        Pet petNew = postJsonPath(endpoint, schemePath, newPet);
+        Pet petNew = postNewPet(Endpoints.Pets.endpoints, SchemaPath.pet.schema, newPet);
 
         //Проверить новый id питомца
         Integer idNewPet = petNew.getId();
@@ -58,7 +51,7 @@ public class PetStoreTest {
         Assert.assertEquals(status, "available");
 
         //Проверить создание нового питомца
-        JsonPath response = getJsonPath(endpoint + "/" + idNewPet, schemePath);
+        JsonPath response = getDataInStore(Endpoints.Pets.endpoints + "/" + idNewPet, SchemaPath.pet.schema);
         Integer idResponsePet = response.get("id");
         Assert.assertEquals(idResponsePet, 12);
         String name = response.get("category.name");
@@ -90,7 +83,7 @@ public class PetStoreTest {
                 .status("available")
                 .build();
         //Запрос POST с новым именем питомца
-        Pet pet = putJsonPath(endpoint, schemePath, newPet);
+        Pet pet = putNewData(Endpoints.Pets.endpoints, SchemaPath.pet.schema, newPet);
 
         //Проверить новое имя питомца
         String newName = pet.getName();
@@ -98,7 +91,7 @@ public class PetStoreTest {
         LOGGER.info("Новое имя питомца в магазине: " + newName);
 
         //Проверить изменение имени питомца питомца с id=12 pet/{id}
-        JsonPath response = getJsonPath(endpoint + "/" + idPet, schemePath);
+        JsonPath response = getDataInStore(Endpoints.Pets.endpoints + "/" + idPet, SchemaPath.pet.schema);
         Integer idResponsePet = response.get("id");
         Assert.assertEquals(idResponsePet, 12);
         String name = response.get("category.name");
@@ -112,7 +105,7 @@ public class PetStoreTest {
     @Description("Проверка статуса 404,message, type в ответе")
     public void testPetNotFoundInStore() {
         //Запрос POST с несуществующим id питомца в магазине
-        JsonPath jsonPath = postNotFound(endpointNotFoundPet);
+        JsonPath jsonPath = postPetNotFoundInStore(Endpoints.NotFoundPet.endpoints);
 
         //Проверка ответа Код статус и message в ответе
         Integer code = jsonPath.get("code");
@@ -141,7 +134,7 @@ public class PetStoreTest {
                 .build();
 
         //Создать новый заказ питомца в магазине
-        Order newGetOrder = postOrderJsonPath(storeEndpoint, schemeStorePath, newOrder);
+        Order newGetOrder = postNewOrder(Endpoints.storeEndpoint.endpoints, SchemaPath.store.schema, newOrder);
 
         //Проверить новый заказ:
         Integer idNewOrder = newGetOrder.getId();
@@ -155,7 +148,7 @@ public class PetStoreTest {
 
 
         //Проверить наличие нового заказа в магазине
-        JsonPath response = getJsonPath(storeEndpoint + "/" + idNewOrder, schemeStorePath);
+        JsonPath response = getDataInStore(Endpoints.storeEndpoint.endpoints + "/" + idNewOrder, SchemaPath.store.schema);
         Integer idResponse = response.get("id");
         Assert.assertEquals(idResponse, 8);
         Integer petId = response.get("petId");

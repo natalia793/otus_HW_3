@@ -9,15 +9,32 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <jre.version>11.0.14</jre.version>
+        <jre.version>17</jre.version>
+        <selenium.java.version>3.141.59</selenium.java.version>
+        <junit.jupiter.version>5.8.1</junit.jupiter.version>
+        <webdrivernanager.version>4.2.0</webdrivernanager.version>
+        <assertj.version>3.23.1</assertj.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <aspectj.version>1.9.7</aspectj.version>
         <allure-testng.version>2.14.0</allure-testng.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <browser>chrome</browser>
+        <webdriver.base.url>https://otus.ru</webdriver.base.url>
+        <test.project.language>RU</test.project.language>
+        <webdriver.timeouts.implicitlywait>5000</webdriver.timeouts.implicitlywait>
         <tags></tags>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>production</id>
+            <properties>
+                <base.url>https://petstore.swagger.io/v2</base.url>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
 
@@ -109,114 +126,76 @@
         <version>2.9.9.3</version>
     </dependency>
 
+        <!--lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
+            <version>1.18.22</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>4.7.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.failsafe</groupId>
+            <artifactId>failsafe</artifactId>
+            <version>3.3.0</version>
         </dependency>
 
     </dependencies>
 
-<build>
-<plugins>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${maven-resources-plugin.version}</version>
-        <executions>
-            <execution>
-                <id>copy-resources</id>
-                <phase>validate</phase>
-                <goals>
-                    <goal>copy-resources</goal>
-                </goals>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <outputDirectory>${project.build.directory}/allure-results</outputDirectory>
-                    <resources>
-                        <resource>
-                            <directory>src/test/resources</directory>
-                            <includes>
-                                <include>environment.properties</include>
-                            </includes>
-                        </resource>
-                    </resources>
+                    <systemPropertyVariables>
+                        <browser>${browser}</browser>
+                        <webdriver.base.url>${webdriver.base.url}</webdriver.base.url>
+                        <test.project.status>test</test.project.status>
+                    </systemPropertyVariables>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <rerunFailingTestsCount>1</rerunFailingTestsCount>
+                    <skipTests>false</skipTests>
+                    <systemProperties>
+                        <property>
+                            <name>allure.results.directory</name>
+                            <value>${project.build.directory}/allure-results</value>
+                        </property>
+                    </systemProperties>
                 </configuration>
-            </execution>
-        </executions>
-    </plugin>
-
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven-compiler-plugin.version}</version>
-        <configuration>
-            <source>11</source>
-            <target>11</target>
-            <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-    </plugin>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-        <configuration>
-            <includes>
-                <include>
-                    RunnerTest.java
-                </include>
-            </includes>
-            <suiteXmlFiles>
-<!--                <suiteXmlFile>testng.xml</suiteXmlFile>-->
-<!--                <suiteXmlFile>suite.xml</suiteXmlFile>-->
-                <!--                        <suiteXmlFile>mockTestNg.xml</suiteXmlFile>-->
-            </suiteXmlFiles>
-            <useSystemClassLoader>false</useSystemClassLoader>
-            <testFailureIgnore>false</testFailureIgnore>
-            <rerunFailingTestsCount>1</rerunFailingTestsCount>
-            <skipTests>false</skipTests>
-            <argLine>
-                -Dcucumber.filter.tags="${tags}"
-                -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-                -Dcucumber.options="--plugin io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm"
-                -Dcucumber.options="@target/rerun.txt"
-                -Dfile.encoding=UTF-8
-            </argLine>
-            <systemProperties>
-                <property>
-                    <name>allure.results.directory</name>
-                    <value>${project.build.directory}/allure-results</value>
-                </property>
-            </systemProperties>
-        </configuration>
-        <dependencies>
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
-        </dependencies>
-    </plugin>
-    <plugin>
-        <groupId>io.qameta.allure</groupId>
-        <artifactId>allure-maven</artifactId>
-        <version>2.10.0</version>
-    </plugin>
-    <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
-        <configuration>
-            <archive>
-                <manifest>
-                    <mainClass>RunJarTests</mainClass>
-                </manifest>
-            </archive>
-            <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-        </configuration>
-    </plugin>
-</plugins>
-</build>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.10.0</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -6,19 +6,40 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.path.json.JsonPath;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidatorSettings.settings;
 
-public class Requests {
+public class Requests{
 
-    public static String url = "https://petstore.swagger.io/v2";
+    public static String url;
 
-    public static Pet postJsonPath(String endpoint, String schemePath, Pet newPet) {
+    static {
+        try {
+            url = getConfigPath("base.url");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getConfigPath(String path) throws IOException {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("src/test/resources/config.properties"));
+        return properties.getProperty(path);
+    }
+
+
+    public static Pet postNewPet(String endpoint, String schemePath, Pet newPet) {
         return given().
                 filters(new AllureRestAssured()).
                 log().all().
                 contentType(ContentType.JSON).
+                relaxedHTTPSValidation().
                 body(newPet).
                 when().
                 post(url+endpoint).
@@ -31,9 +52,10 @@ public class Requests {
                 extract().response().as(Pet.class);
     }
 
-    public static Order postOrderJsonPath(String endpoint, String schemePath, Order newOrder) {
+    public static Order postNewOrder(String endpoint, String schemePath, Order newOrder) {
         return given().
                 filters(new AllureRestAssured()).
+                relaxedHTTPSValidation().
                 log().all().
                 contentType(ContentType.JSON).
                 body(newOrder).
@@ -49,9 +71,10 @@ public class Requests {
     }
 
 
-    public static JsonPath getJsonPath(String endpoint, String schemePath) {
+    public static JsonPath getDataInStore(String endpoint, String schemePath) {
         return given().
                 filters(new AllureRestAssured()).
+                relaxedHTTPSValidation().
                 log().all().
                 contentType(ContentType.JSON).
                 when().
@@ -65,9 +88,10 @@ public class Requests {
                 extract().jsonPath();
     }
 
-    public static Pet putJsonPath(String endpoint, String schemePath, Pet newPet) {
+    public static Pet putNewData(String endpoint, String schemePath, Pet newPet) {
         return given().
                 filters(new AllureRestAssured()).
+                relaxedHTTPSValidation().
                 log().all().
                 contentType(ContentType.JSON).
                 body(newPet).
@@ -83,9 +107,10 @@ public class Requests {
     }
 
 
-    public static JsonPath postNotFound(String endpoint) {
+    public static JsonPath postPetNotFoundInStore(String endpoint) {
         return given().
                 filters(new AllureRestAssured()).
+                relaxedHTTPSValidation().
                 log().all().
                 contentType("application/x-www-form-urlencoded; charset=UTF-8").
                 body("1").
