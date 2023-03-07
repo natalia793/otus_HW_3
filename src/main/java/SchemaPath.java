@@ -1,15 +1,14 @@
 public enum SchemaPath {
 
 
-    store("SchemaStore.json"),
-    pet("SchemaPetAdd.json");
-    ;
+  store("SchemaStore.json"),
+  pet("SchemaPetAdd.json");
 
-    public final String schema;
+  public final String schema;
 
-    SchemaPath(String schema) {
-        this.schema = schema;
-    }
+  SchemaPath(String schema) {
+    this.schema = schema;
+  }
 
 
 }

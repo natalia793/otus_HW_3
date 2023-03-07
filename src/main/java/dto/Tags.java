@@ -1,6 +1,5 @@
 package dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Tags {
-    public int id;
-    public String name;
+  public int id;
+  public String name;
 }
