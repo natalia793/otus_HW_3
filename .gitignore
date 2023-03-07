@@ -3,5 +3,3 @@ target
 logs
 allure-results
 .allure
-allure
-allure-report
